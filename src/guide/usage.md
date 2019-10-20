@@ -196,3 +196,49 @@ class ProductFixture
     }
 }
 ```
+
+## Using with Codeception
+
+### Suites configuration files
+
+It's possible to have different configuration files for Suites in Codeception, located at `paths.tests`.
+
+For example:
+
+```bash
+├── codeception.yml
+└── tests
+    ├── _data
+    ├── _output
+    ├── _support
+    ├── integration
+    └── integration.suite.yml
+```
+
+Here we have the main `codeception.yml` file as well as `integration.suite.yml` that is merged into the main one during Codeception execution.
+
+If you have relative paths in any of the suites config, it won't work with Infection, because Infection can override only the main `codeception.yml` configuration file.
+
+You can simply move Suite's configuration to `codeception.yaml` and remove `integration.suite.yml`:
+
+```yaml
+# codeception.yml
+
+# ...
+
+suites:
+    integration:
+        actor: IntegrationTester
+        modules:
+            enabled:
+                - \Stuff\Helper\Integration
+                - Db:
+                      dsn: 'sqlite:stuff.sq3'
+                      user: 'test'
+                      password: 'test'
+                      dump:
+                          - 'tests/_data/stuff.sql'
+                      cleanup: false
+                      populate: true
+            step_decorators: ~
+```
